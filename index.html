@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>OneLove Exam Prep — BCBA, RBT & NYSTCE</title>
+<meta name="description" content="OneLove Behavior Analysts exam-prep suite — interactive prep for the BCBA, RBT, and NYSTCE (CST Students with Disabilities, Multi-Subject, and Educating All Students) certification exams." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg-base:#f4ecd9; --bg:var(--bg-base);
+    --surface:rgba(255,251,242,0.82); --surface-2:rgba(255,251,242,0.55); --surface-solid:#fffdf6;
+    --text:#241a10; --muted:#6e6353; --border:#e6d8bf;
+    --accent:#c2531f; --accent-2:#a14a1f; --accent-bg:#f6e2cf;
+    --green:#3d6b3d; --gold:#b18432; --berry:#6f3047; --sage:#5a7a52;
+    --shadow:0 4px 24px rgba(36,26,16,0.08);
+  }
+  :root[data-theme="dark"] {
+    --bg-base:#1c150e;
+    --surface:rgba(255,246,232,0.06); --surface-2:rgba(255,246,232,0.04); --surface-solid:#2a2017;
+    --text:#f3ece0; --muted:#c7b69a; --border:rgba(255,246,232,0.12);
+    --accent:#e07a3f; --accent-2:#e0a071; --accent-bg:rgba(224,122,63,.16);
+    --green:#a8c8a0; --gold:#d8a754; --berry:#b07088; --sage:#a8c8a0;
+    --shadow:0 6px 28px rgba(0,0,0,0.5);
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin:0; color:var(--text);
+    font-family:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+    -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+    background:
+      radial-gradient(ellipse 80% 50% at 50% 0%, rgba(194,83,31,.12), transparent 70%),
+      radial-gradient(ellipse 60% 50% at 100% 28%, rgba(177,132,50,.12), transparent 70%),
+      radial-gradient(ellipse 60% 55% at 0% 100%, rgba(111,48,71,.10), transparent 70%),
+      var(--bg-base);
+    background-attachment:fixed;
+    transition:background .3s ease, color .3s ease;
+  }
+  :root[data-theme="dark"] html, :root[data-theme="dark"] body {
+    background:
+      radial-gradient(ellipse 80% 50% at 50% 0%, rgba(224,122,63,.10), transparent 70%),
+      radial-gradient(ellipse 60% 50% at 100% 28%, rgba(216,167,84,.08), transparent 70%),
+      radial-gradient(ellipse 60% 55% at 0% 100%, rgba(176,112,136,.08), transparent 70%),
+      var(--bg-base);
+  }
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 0 clamp(18px,5vw,40px); }
+  a { color: inherit; }
+
+  /* top bar */
+  .topbar { display:flex; align-items:center; justify-content:space-between; padding:20px 0 8px; }
+  .brand { display:flex; align-items:center; gap:10px; }
+  .eyebrow { font-size:10px; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); }
+  .toggle { padding:6px 12px; border-radius:99px; border:1px solid var(--border); background:var(--surface); color:var(--text); cursor:pointer; font-size:14px; line-height:1; }
+
+  /* hero */
+  .hero { text-align:center; padding:34px 0 26px; }
+  .kicker { font-size:11px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); margin-bottom:14px; }
+  h1 { font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; font-size:clamp(2.2rem,6vw,3.6rem); line-height:1.04; letter-spacing:-.03em; margin:0 0 16px; }
+  h1 .accent { background:linear-gradient(90deg,var(--accent) 0%,var(--berry) 50%,var(--gold) 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+  .lead { font-size:1.06rem; color:var(--muted); max-width:600px; margin:0 auto 22px; line-height:1.6; }
+  .code-badge { display:inline-flex; align-items:center; gap:10px; padding:12px 20px; border-radius:99px; background:var(--accent-bg); border:1px solid var(--border); font-weight:700; }
+  .code-badge .lbl { font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--accent-2); }
+  .code-badge .code { font-size:1.15rem; letter-spacing:.04em; color:var(--text); font-family:'Fraunces',Georgia,serif; }
+  .free-pill { display:inline-block; margin-top:14px; font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--green); }
+
+  /* sections */
+  section { margin-top:40px; }
+  .sec-head { text-align:center; margin-bottom:18px; }
+  .sec-head .cap { font-size:11px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--accent-2); }
+  .sec-head h2 { font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; font-size:1.5rem; letter-spacing:-.02em; margin:6px 0 0; }
+  .sec-head p { font-size:.95rem; color:var(--muted); margin:8px auto 0; max-width:560px; line-height:1.5; }
+
+  /* steps */
+  .steps { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:14px; }
+  .step { background:var(--surface); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border:1px solid var(--border); border-radius:16px; padding:18px 20px; box-shadow:var(--shadow); }
+  .step .n { width:34px; height:34px; border-radius:50%; background:var(--accent-bg); color:var(--accent-2); font-weight:800; display:flex; align-items:center; justify-content:center; margin-bottom:10px; }
+  .step h3 { font-size:15px; font-weight:700; margin:0 0 4px; }
+  .step p { font-size:13.5px; color:var(--muted); margin:0; line-height:1.5; }
+
+  /* exam groups + cards */
+  .group-label { font-size:11px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); margin:26px 0 12px; padding-bottom:8px; border-bottom:1px solid var(--border); }
+  .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:14px; }
+  .card { display:flex; flex-direction:column; background:var(--surface); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border:1px solid var(--border); border-radius:18px; padding:22px; box-shadow:var(--shadow); transition:transform .25s cubic-bezier(.2,.7,.2,1), box-shadow .25s, border-color .25s; }
+  .card:hover { transform:translateY(-3px); box-shadow:0 10px 30px rgba(36,26,16,.13); border-color:var(--accent); }
+  .card .top { display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+  .card .icon { font-size:26px; }
+  .card .badge { font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--accent-2); background:var(--accent-bg); padding:3px 9px; border-radius:99px; }
+  .card h3 { font-size:1.1rem; font-weight:800; letter-spacing:-.01em; margin:0 0 6px; }
+  .card p { font-size:13.5px; color:var(--muted); line-height:1.55; margin:0 0 16px; flex:1; }
+  .card .meta { font-size:12px; color:var(--muted); margin:0 0 14px; font-weight:600; }
+  .btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:12px 18px; border-radius:99px; background:var(--accent); color:#fff; font-weight:700; font-size:14px; text-decoration:none; box-shadow:0 4px 18px rgba(194,83,31,.28); transition:filter .2s, transform .2s; }
+  .btn:hover { filter:brightness(1.05); transform:translateY(-1px); }
+  .btn .arrow { transition:transform .25s; } .card:hover .btn .arrow { transform:translateX(4px); }
+
+  /* info / faq */
+  .info { background:var(--surface); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border:1px solid var(--border); border-radius:18px; padding:24px 26px; box-shadow:var(--shadow); }
+  .info h3 { font-size:15px; font-weight:800; margin:0 0 6px; }
+  .info details { border-top:1px solid var(--border); padding:12px 0; }
+  .info details:first-of-type { border-top:none; }
+  .info summary { font-weight:700; font-size:14.5px; cursor:pointer; list-style:none; display:flex; justify-content:space-between; align-items:center; }
+  .info summary::-webkit-details-marker { display:none; }
+  .info summary::after { content:'+'; color:var(--accent-2); font-weight:800; }
+  .info details[open] summary::after { content:'–'; }
+  .info details p { font-size:13.5px; color:var(--muted); line-height:1.6; margin:10px 0 2px; }
+
+  /* footer */
+  footer { margin-top:48px; border-top:1px solid var(--border); background:var(--surface-2); padding:26px 0 36px; }
+  footer .ft { max-width:680px; margin:0 auto; text-align:center; }
+  footer .mark { font-family:'Fraunces',Georgia,serif; font-weight:600; font-size:18px; }
+  footer .mark .heart { color:var(--accent); }
+  footer .pllc { font-size:10px; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin:6px 0 14px; }
+  footer .disc { font-size:11px; color:var(--muted); line-height:1.6; margin:0; }
+  footer a.email { color:var(--accent-2); font-weight:600; text-decoration:none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="brand">
+      <span class="mark" style="font-family:'Fraunces',Georgia,serif;font-weight:600;font-size:20px;">One<span style="color:var(--accent)">♥</span>Love</span>
+    </div>
+    <button class="toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle light/dark">🌙</button>
+  </div>
+
+  <header class="hero">
+    <div class="kicker">OneLove Behavior Analysts · Exam Prep</div>
+    <h1>Pass your <span class="accent">certification exam.</span></h1>
+    <p class="lead">Interactive, framework-aligned prep for the BCBA and RBT credentials and the New York State teacher-certification exams — diagnostic pretests, study modules, and full-length practice, all in one place.</p>
+    <div class="code-badge"><span class="lbl">Access code</span><span class="code">onelove2026</span></div>
+    <div class="free-pill">● Free access during launch</div>
+  </header>
+
+  <section>
+    <div class="sec-head">
+      <div class="cap">How It Works</div>
+      <h2>Four steps, any device</h2>
+    </div>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><h3>Pick your exam</h3><p>Choose your credential from the list below and open its prep app.</p></div>
+      <div class="step"><div class="n">2</div><h3>Sign in</h3><p>Enter your name and the access code <strong>onelove2026</strong>. Your progress saves on your device.</p></div>
+      <div class="step"><div class="n">3</div><h3>Take the pretest</h3><p>A short diagnostic pinpoints exactly which areas to focus on.</p></div>
+      <div class="step"><div class="n">4</div><h3>Study &amp; practice</h3><p>Work the modules — key terms, Quick Checks, sort games, read-aloud — then the full practice exam.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <div class="cap">The Apps</div>
+      <h2>Choose your exam</h2>
+      <p>Five complete prep courses. Every one is open now with the access code above.</p>
+    </div>
+
+    <div class="group-label">Behavior Analysis Certification · BACB®</div>
+    <div class="cards">
+      <div class="card">
+        <div class="top"><span class="icon">🧠</span><span class="badge">BCBA</span></div>
+        <h3>Board Certified Behavior Analyst</h3>
+        <p>All nine content-outline domains with active-recall Quick Checks, categorize games, animated concept visuals, SAFMEDS, and a full-length mock exam.</p>
+        <a class="btn" href="https://lgibs222.github.io/bcba-exam-prep/" target="_blank" rel="noopener">Open BCBA prep <span class="arrow">→</span></a>
+      </div>
+      <div class="card">
+        <div class="top"><span class="icon">📋</span><span class="badge">RBT</span></div>
+        <h3>Registered Behavior Technician</h3>
+        <p>Full RBT task-list coverage across all six domains, with Quick Checks, sort games, and an 85-question mock exam.</p>
+        <a class="btn" href="https://lgibs222.github.io/rbt-exam-prep/" target="_blank" rel="noopener">Open RBT prep <span class="arrow">→</span></a>
+      </div>
+    </div>
+
+    <div class="group-label">New York State Teacher Certification · NYSTCE®</div>
+    <div class="cards">
+      <div class="card">
+        <div class="top"><span class="icon">🌍</span><span class="badge">EAS · 201</span></div>
+        <h3>Educating All Students</h3>
+        <p>Required for nearly every NY certificate. Diverse learners, multilingual learners, students with disabilities, teacher responsibilities, and school–home relationships — plus the three constructed-response cases.</p>
+        <a class="btn" href="https://lgibs222.github.io/eas-exam-prep/" target="_blank" rel="noopener">Open EAS prep <span class="arrow">→</span></a>
+      </div>
+      <div class="card">
+        <div class="top"><span class="icon">⚖️</span><span class="badge">CST · 060</span></div>
+        <h3>CST: Students with Disabilities</h3>
+        <p>All seven competencies — IDEA &amp; NY Part 200, assessment, the IEP, behavior, and instruction — with interactive modules and the written assignment.</p>
+        <a class="btn" href="https://lgibs222.github.io/ny-swd-exam-prep/" target="_blank" rel="noopener">Open SWD prep <span class="arrow">→</span></a>
+      </div>
+      <div class="card">
+        <div class="top"><span class="icon">📚</span><span class="badge">CST · 221/222/245</span></div>
+        <h3>CST: Multi-Subject (Childhood)</h3>
+        <p>Teachers of Childhood — Part One Literacy &amp; ELA, Part Two Mathematics, Part Three Arts &amp; Sciences — with study modules and constructed response.</p>
+        <a class="btn" href="https://lgibs222.github.io/ny-multisubject-exam-prep/" target="_blank" rel="noopener">Open Multi-Subject prep <span class="arrow">→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <div class="cap">Good to Know</div>
+      <h2>Using the prep apps</h2>
+    </div>
+    <div class="info">
+      <h3 style="margin-bottom:12px;">Everything you need to get started</h3>
+      <details open><summary>What's the access code?</summary><p><strong>onelove2026</strong> — the same code works for all five apps. Enter your name and the code on the sign-in screen of any app above.</p></details>
+      <details><summary>Does my progress save?</summary><p>Yes. Your pretest results, completed modules, and post-test scores are saved on the device and browser you use, so you can pick up where you left off. Using a different device or clearing your browser starts fresh.</p></details>
+      <details><summary>What devices work?</summary><p>Any modern browser on phone, tablet, or laptop. No install, no account to create — just the access code.</p></details>
+      <details><summary>How should I use a course?</summary><p>Start with the diagnostic <strong>pretest</strong> to see your weak areas, work the flagged <strong>study modules</strong> (concept cards, key terms, Quick Checks, sort games, and read-aloud), then take the <strong>post-test</strong> or mock exam to measure your growth. Flashcards and a quick-quiz mode are there for targeted review.</p></details>
+      <details><summary>Is this affiliated with the testing boards?</summary><p>No. These are independent study aids from OneLove Behavior Analysts, PLLC, built to the publicly available test frameworks. They are not affiliated with, endorsed by, or sponsored by the BACB®, NYSED, or the Evaluation Systems group of Pearson.</p></details>
+      <details><summary>Need help or a code?</summary><p>Email <a class="email" href="mailto:lenwoodjr@gmail.com">lenwoodjr@gmail.com</a>.</p></details>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="wrap"><div class="ft">
+    <div class="mark">One<span class="heart">♥</span>Love</div>
+    <div class="pllc">Behavior Analysts, PLLC</div>
+    <p class="disc">OneLove Behavior Analysts, PLLC is not affiliated with, endorsed by, or sponsored by the Behavior Analyst Certification Board (BACB®), the New York State Education Department, or the Evaluation Systems group of Pearson. BCBA®, RBT®, NYSTCE®, and CST® are registered marks of their respective owners. These practice tools are provided for educational purposes only and do not guarantee passage of any certification examination. · Questions? <a class="email" href="mailto:lenwoodjr@gmail.com">lenwoodjr@gmail.com</a></p>
+  </div></div>
+</footer>
+
+<script>
+  (function () {
+    var root = document.documentElement, btn = document.getElementById('themeToggle');
+    var saved = null; try { saved = localStorage.getItem('onelove-hub-theme'); } catch (e) {}
+    if (saved) root.setAttribute('data-theme', saved);
+    var sync = function () { btn.textContent = root.getAttribute('data-theme') === 'dark' ? '☀️' : '🌙'; };
+    sync();
+    btn.addEventListener('click', function () {
+      var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      try { localStorage.setItem('onelove-hub-theme', next); } catch (e) {}
+      sync();
+    });
+  })();
+</script>
+</body>
+</html>
