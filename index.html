@@ -224,9 +224,9 @@
         </select>
       </div>
       <div class="field"><label for="rq-note">Anything to add? (optional)</label><textarea id="rq-note" rows="2" placeholder="e.g., test date, program, or who referred you"></textarea></div>
-      <button class="btn btn-lg" id="rq-send" type="button">Email my request <span class="arrow">→</span></button>
-      <p class="rq-sent" id="rq-sent">✓ Your email draft is open — just hit send and I'll reply with your code.</p>
-      <p class="rq-fallback">Button not opening your email app? Write <a class="email" href="mailto:lenwoodjr@gmail.com?subject=Exam%20Prep%20Access%20Request">lenwoodjr@gmail.com</a> directly.</p>
+      <button class="btn btn-lg" id="rq-send" type="button">Send my request <span class="arrow">→</span></button>
+      <p class="rq-sent" id="rq-sent"></p>
+      <p class="rq-fallback">Trouble submitting? Write <a class="email" href="mailto:lenwoodjr@gmail.com?subject=Exam%20Prep%20Access%20Request">lenwoodjr@gmail.com</a> directly.</p>
     </div>
   </section>
 
@@ -270,16 +270,37 @@
       sync();
     });
 
+    // Direct-submit endpoint. Paste a free Web3Forms access key (tied to
+    // lenwoodjr@gmail.com) to send requests straight to the inbox with no
+    // email-app step. Until then, the form falls back to a prefilled draft.
+    var WEB3FORMS_KEY = 'PASTE_WEB3FORMS_ACCESS_KEY';
     var send = document.getElementById('rq-send');
+    var sent = document.getElementById('rq-sent');
+    var show = function (msg, ok) { if (sent) { sent.textContent = msg; sent.style.color = ok === false ? 'var(--red)' : 'var(--green)'; sent.style.display = 'block'; } };
+    var mailtoFallback = function (nm, em, ex, note) {
+      var subject = 'Exam Prep access request — ' + nm;
+      var body = 'Hi Dr. Gibson,\n\nPlease send me an access code for the OneLove exam prep.\n\n'
+        + 'Name: ' + nm + '\nEmail: ' + em + '\nExam: ' + ex + (note ? '\nNote: ' + note : '') + '\n\nThank you!';
+      window.location.href = 'mailto:lenwoodjr@gmail.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+    };
     if (send) send.addEventListener('click', function () {
       var val = function (id) { var el = document.getElementById(id); return el ? (el.value || '').trim() : ''; };
       var nm = val('rq-name'), em = val('rq-email'), ex = val('rq-exam'), note = val('rq-note');
       if (!nm || !em) { alert('Please add your name and email so Dr. Gibson can send your code.'); return; }
-      var subject = 'Exam Prep access request — ' + nm;
-      var body = 'Hi Dr. Gibson,\n\nPlease send me an access code for the OneLove exam prep.\n\n'
-        + 'Name: ' + nm + '\nEmail: ' + em + '\nExam: ' + ex + (note ? '\nNote: ' + note : '') + '\n\nThank you!';
-      var sent = document.getElementById('rq-sent'); if (sent) sent.style.display = 'block';
-      window.location.href = 'mailto:lenwoodjr@gmail.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+      var configured = WEB3FORMS_KEY && WEB3FORMS_KEY.indexOf('PASTE_') !== 0;
+      if (!configured) { mailtoFallback(nm, em, ex, note); show('✓ Your email draft is open — hit send and I’ll reply with your code.'); return; }
+      var label = send.innerHTML; send.disabled = true; send.textContent = 'Sending…';
+      fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ access_key: WEB3FORMS_KEY, subject: 'Exam Prep access request — ' + nm, from_name: 'OneLove Exam Prep', name: nm, email: em, exam: ex, note: note, botcheck: '' })
+      }).then(function (r) { return r.json(); }).then(function (d) {
+        if (d && d.success) { send.style.display = 'none'; show('✓ Request sent — your access code will be emailed to you shortly.'); }
+        else { throw new Error('web3forms'); }
+      }).catch(function () {
+        send.disabled = false; send.innerHTML = label;
+        mailtoFallback(nm, em, ex, note); show('✓ Your email draft is open — hit send and I’ll reply with your code.');
+      });
     });
   })();
 </script>
