@@ -94,6 +94,18 @@
   .btn:hover { filter:brightness(1.05); transform:translateY(-1px); }
   .btn .arrow { transition:transform .25s; } .card:hover .btn .arrow { transform:translateX(4px); }
 
+  .btn-lg { padding:14px 26px; font-size:15px; }
+  /* request access */
+  .request { max-width:560px; margin:0 auto; background:var(--surface); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border:1px solid var(--border); border-radius:18px; padding:24px 26px; box-shadow:var(--shadow); }
+  .request .field { margin-bottom:14px; }
+  .request label { display:block; font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
+  .request input, .request select, .request textarea { width:100%; padding:11px 14px; border-radius:10px; border:1.5px solid var(--border); background:var(--surface-solid); color:var(--text); font-family:inherit; font-size:15px; outline:none; box-sizing:border-box; }
+  .request input:focus, .request select:focus, .request textarea:focus { border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-bg); }
+  .request textarea { resize:vertical; }
+  .request .btn { width:100%; margin-top:4px; border:none; cursor:pointer; }
+  .rq-fallback { font-size:12px; color:var(--muted); text-align:center; margin:12px 0 0; }
+  .rq-fallback a { color:var(--accent-2); font-weight:600; text-decoration:none; }
+  .rq-sent { display:none; text-align:center; padding:8px 0 0; color:var(--green); font-weight:700; font-size:14px; }
   /* info / faq */
   .info { background:var(--surface); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border:1px solid var(--border); border-radius:18px; padding:24px 26px; box-shadow:var(--shadow); }
   .info h3 { font-size:15px; font-weight:800; margin:0 0 6px; }
@@ -129,8 +141,8 @@
     <div class="kicker">OneLove Behavior Analysts · Exam Prep</div>
     <h1>Pass your <span class="accent">certification exam.</span></h1>
     <p class="lead">Interactive, framework-aligned prep for the BCBA and RBT credentials and the New York State teacher-certification exams — diagnostic pretests, study modules, and full-length practice, all in one place.</p>
-    <div class="code-badge"><span class="lbl">Access code</span><span class="code">onelove2026</span></div>
-    <div class="free-pill">● Free access during launch</div>
+    <a class="btn btn-lg" href="#request">Request your access code <span class="arrow">→</span></a>
+    <div class="free-pill">● Free during launch · access by request</div>
   </header>
 
   <section>
@@ -140,7 +152,7 @@
     </div>
     <div class="steps">
       <div class="step"><div class="n">1</div><h3>Pick your exam</h3><p>Choose your credential from the list below and open its prep app.</p></div>
-      <div class="step"><div class="n">2</div><h3>Sign in</h3><p>Enter your name and the access code <strong>onelove2026</strong>. Your progress saves on your device.</p></div>
+      <div class="step"><div class="n">2</div><h3>Sign in</h3><p>Enter your name and the access code you were sent. Your progress saves on your device.</p></div>
       <div class="step"><div class="n">3</div><h3>Take the pretest</h3><p>A short diagnostic pinpoints exactly which areas to focus on.</p></div>
       <div class="step"><div class="n">4</div><h3>Study &amp; practice</h3><p>Work the modules — key terms, Quick Checks, sort games, read-aloud — then the full practice exam.</p></div>
     </div>
@@ -192,6 +204,32 @@
     </div>
   </section>
 
+  <section id="request">
+    <div class="sec-head">
+      <div class="cap">Get Access</div>
+      <h2>Request your access code</h2>
+      <p>The prep apps are free during launch and open by request. Send a quick note and Dr. Gibson will email your code.</p>
+    </div>
+    <div class="request">
+      <div class="field"><label for="rq-name">Your name</label><input id="rq-name" type="text" placeholder="First and last name" autocomplete="name" /></div>
+      <div class="field"><label for="rq-email">Your email</label><input id="rq-email" type="email" placeholder="you@example.com" autocomplete="email" /></div>
+      <div class="field"><label for="rq-exam">Which exam?</label>
+        <select id="rq-exam">
+          <option>All of them</option>
+          <option>BCBA</option>
+          <option>RBT</option>
+          <option>Educating All Students (EAS, 201)</option>
+          <option>CST: Students with Disabilities (060)</option>
+          <option>CST: Multi-Subject (221/222/245)</option>
+        </select>
+      </div>
+      <div class="field"><label for="rq-note">Anything to add? (optional)</label><textarea id="rq-note" rows="2" placeholder="e.g., test date, program, or who referred you"></textarea></div>
+      <button class="btn btn-lg" id="rq-send" type="button">Email my request <span class="arrow">→</span></button>
+      <p class="rq-sent" id="rq-sent">✓ Your email draft is open — just hit send and I'll reply with your code.</p>
+      <p class="rq-fallback">Button not opening your email app? Write <a class="email" href="mailto:lenwoodjr@gmail.com?subject=Exam%20Prep%20Access%20Request">lenwoodjr@gmail.com</a> directly.</p>
+    </div>
+  </section>
+
   <section>
     <div class="sec-head">
       <div class="cap">Good to Know</div>
@@ -199,7 +237,7 @@
     </div>
     <div class="info">
       <h3 style="margin-bottom:12px;">Everything you need to get started</h3>
-      <details open><summary>What's the access code?</summary><p><strong>onelove2026</strong> — the same code works for all five apps. Enter your name and the code on the sign-in screen of any app above.</p></details>
+      <details open><summary>How do I get an access code?</summary><p>Request one with the form above — it's free during launch. Dr. Gibson will email your code, then you sign in to any app with your name and that code. The same code works across all five apps.</p></details>
       <details><summary>Does my progress save?</summary><p>Yes. Your pretest results, completed modules, and post-test scores are saved on the device and browser you use, so you can pick up where you left off. Using a different device or clearing your browser starts fresh.</p></details>
       <details><summary>What devices work?</summary><p>Any modern browser on phone, tablet, or laptop. No install, no account to create — just the access code.</p></details>
       <details><summary>How should I use a course?</summary><p>Start with the diagnostic <strong>pretest</strong> to see your weak areas, work the flagged <strong>study modules</strong> (concept cards, key terms, Quick Checks, sort games, and read-aloud), then take the <strong>post-test</strong> or mock exam to measure your growth. Flashcards and a quick-quiz mode are there for targeted review.</p></details>
@@ -230,6 +268,18 @@
       root.setAttribute('data-theme', next);
       try { localStorage.setItem('onelove-hub-theme', next); } catch (e) {}
       sync();
+    });
+
+    var send = document.getElementById('rq-send');
+    if (send) send.addEventListener('click', function () {
+      var val = function (id) { var el = document.getElementById(id); return el ? (el.value || '').trim() : ''; };
+      var nm = val('rq-name'), em = val('rq-email'), ex = val('rq-exam'), note = val('rq-note');
+      if (!nm || !em) { alert('Please add your name and email so Dr. Gibson can send your code.'); return; }
+      var subject = 'Exam Prep access request — ' + nm;
+      var body = 'Hi Dr. Gibson,\n\nPlease send me an access code for the OneLove exam prep.\n\n'
+        + 'Name: ' + nm + '\nEmail: ' + em + '\nExam: ' + ex + (note ? '\nNote: ' + note : '') + '\n\nThank you!';
+      var sent = document.getElementById('rq-sent'); if (sent) sent.style.display = 'block';
+      window.location.href = 'mailto:lenwoodjr@gmail.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
     });
   })();
 </script>
