@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>OneLove Exam Prep — Admin Dashboard</title>
+<meta name="robots" content="noindex, nofollow" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg-base:#f4ecd9; --surface:rgba(255,251,242,0.82); --surface-solid:#fffdf6;
+    --text:#241a10; --muted:#6e6353; --border:#e6d8bf;
+    --accent:#c2531f; --accent-2:#a14a1f; --accent-bg:#f6e2cf;
+    --green:#3d6b3d; --green-bg:#e6eddd; --red:#a8453a; --red-bg:#f4ddd6;
+    --shadow:0 4px 24px rgba(36,26,16,0.08);
+  }
+  * { box-sizing:border-box; }
+  html, body { margin:0; color:var(--text); font-family:'Plus Jakarta Sans',system-ui,sans-serif; -webkit-font-smoothing:antialiased;
+    background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(194,83,31,.12), transparent 70%), var(--bg-base); background-attachment:fixed; }
+  .wrap { max-width:1100px; margin:0 auto; padding:28px clamp(16px,4vw,40px) 80px; }
+  h1 { font-weight:800; font-size:1.7rem; letter-spacing:-.02em; margin:0 0 4px; }
+  .sub { color:var(--muted); font-size:13.5px; margin:0 0 22px; }
+  .mark { font-family:'Fraunces',Georgia,serif; font-weight:600; font-size:19px; margin-bottom:14px; }
+  .mark .heart { color:var(--accent); }
+  .card { background:var(--surface); backdrop-filter:blur(14px); border:1px solid var(--border); border-radius:16px; padding:20px 22px; box-shadow:var(--shadow); margin-bottom:16px; }
+  label { display:block; font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
+  input { width:100%; padding:10px 13px; border-radius:10px; border:1.5px solid var(--border); background:var(--surface-solid); color:var(--text); font-family:inherit; font-size:14px; outline:none; margin-bottom:12px; }
+  input:focus { border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-bg); }
+  button { padding:11px 20px; border-radius:99px; border:none; background:var(--accent); color:#fff; font-weight:700; font-size:14px; cursor:pointer; font-family:inherit; }
+  button.ghost { background:transparent; color:var(--text); border:1.5px solid var(--border); }
+  .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+  .pill { font-size:11px; font-weight:700; padding:3px 10px; border-radius:99px; background:var(--accent-bg); color:var(--accent-2); }
+  .apps { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; margin-bottom:16px; }
+  .app-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:14px 16px; box-shadow:var(--shadow); }
+  .app-card .nm { font-weight:800; font-size:14px; margin-bottom:6px; }
+  .app-card .st { font-size:12px; color:var(--muted); line-height:1.6; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th { text-align:left; font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); padding:8px 10px; border-bottom:1.5px solid var(--border); white-space:nowrap; }
+  td { padding:9px 10px; border-bottom:1px solid var(--border); vertical-align:top; }
+  tr:hover td { background:var(--accent-bg); }
+  .num { font-variant-numeric:tabular-nums; font-weight:700; }
+  .pos { color:var(--green); } .neg { color:var(--red); } .dim { color:var(--muted); font-weight:400; }
+  .err { color:var(--red); font-weight:600; font-size:13.5px; }
+  .hint { font-size:12.5px; color:var(--muted); line-height:1.6; }
+  .hint code { background:var(--accent-bg); padding:1px 6px; border-radius:6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="mark">One<span class="heart">♥</span>Love</div>
+  <h1>Exam Prep — Admin Dashboard</h1>
+  <p class="sub">Per-user performance across all prep apps. Private view — data loads only with your tracking key.</p>
+
+  <div class="card" id="setup">
+    <label for="ep">Tracking endpoint (Apps Script /exec URL)</label>
+    <input id="ep" type="url" placeholder="https://script.google.com/macros/s/…/exec" />
+    <label for="ky">Secret key</label>
+    <input id="ky" type="password" placeholder="The SECRET set in tracking-backend.gs" />
+    <div class="row">
+      <button id="load">Load dashboard</button>
+      <button id="forget" class="ghost">Forget saved settings</button>
+      <span id="status" class="hint"></span>
+    </div>
+    <p class="hint" style="margin-bottom:0">Setup: deploy <code>tracking-backend.gs</code> as a web app (Execute as Me · access Anyone), set its <code>SECRET</code>, then paste both here. Settings save in this browser only.</p>
+  </div>
+
+  <div id="out"></div>
+</div>
+
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  try { $('ep').value = localStorage.getItem('ol-admin-ep') || ''; $('ky').value = localStorage.getItem('ol-admin-key') || ''; } catch (e) {}
+
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+  var pctCell = function (v) { return v == null ? '<span class="dim">—</span>' : '<span class="num">' + esc(v) + '%</span>'; };
+  var when = function (iso) { if (!iso) return '<span class="dim">—</span>'; var d = new Date(iso); return isNaN(d) ? esc(iso) : esc(d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })); };
+
+  function render(data) {
+    var appsHtml = Object.keys(data.apps || {}).sort().map(function (a) {
+      var s = data.apps[a];
+      return '<div class="app-card"><div class="nm">' + esc(a || '(unknown app)') + '</div><div class="st">'
+        + '<b>' + s.users + '</b> users · <b>' + s.pretests + '</b> pretests · <b>' + s.posttests + '</b> post-tests'
+        + (s.avgGrowth != null ? ' · avg growth <b>' + (s.avgGrowth > 0 ? '+' : '') + s.avgGrowth + '%</b>' : '') + '</div></div>';
+    }).join('');
+
+    var rows = (data.users || []).map(function (u) {
+      var growth = u.growth == null ? '<span class="dim">—</span>'
+        : '<span class="num ' + (u.growth >= 0 ? 'pos' : 'neg') + '">' + (u.growth > 0 ? '+' : '') + esc(u.growth) + '%</span>';
+      return '<tr><td><b>' + esc(u.name) + '</b></td><td><span class="pill">' + esc(u.app) + '</span></td>'
+        + '<td>' + when(u.lastSeen) + '</td>'
+        + '<td class="num">' + esc(u.logins) + '</td>'
+        + '<td>' + pctCell(u.pretestPct) + '</td><td>' + pctCell(u.postPct) + '</td><td>' + growth + '</td>'
+        + '<td class="num">' + esc(u.modulesCompleted) + '</td>'
+        + '<td>' + (u.quizzes ? '<span class="num">' + esc(u.quizzes) + '</span> <span class="dim">(avg ' + esc(u.quizAvg) + '%)</span>' : '<span class="dim">—</span>') + '</td>'
+        + '<td class="num">' + esc(u.crDone || 0) + '</td>'
+        + '<td class="dim">' + esc((u.weak || []).slice(0, 3).join(', ')) + ((u.weak || []).length > 3 ? '…' : '') + '</td></tr>';
+    }).join('');
+
+    $('out').innerHTML = '<div class="apps">' + appsHtml + '</div>'
+      + '<div class="card" style="overflow-x:auto"><table><thead><tr>'
+      + '<th>User</th><th>App</th><th>Last seen</th><th>Logins</th><th>Pretest</th><th>Post</th><th>Growth</th><th>Modules</th><th>Quizzes</th><th>CRs</th><th>Weak areas (pretest)</th>'
+      + '</tr></thead><tbody>' + (rows || '<tr><td colspan="11" class="dim">No data yet — events appear as users study.</td></tr>') + '</tbody></table>'
+      + '<p class="hint" style="margin:12px 0 0">Generated ' + when(data.generatedAt) + ' · raw rows live in the Google Sheet (Logins + Events tabs).</p></div>';
+  }
+
+  $('load').addEventListener('click', function () {
+    var ep = $('ep').value.trim(), ky = $('ky').value.trim();
+    if (!ep || !ky) { $('status').innerHTML = '<span class="err">Add both the endpoint and the key.</span>'; return; }
+    try { localStorage.setItem('ol-admin-ep', ep); localStorage.setItem('ol-admin-key', ky); } catch (e) {}
+    $('status').textContent = 'Loading…';
+    fetch(ep + (ep.indexOf('?') < 0 ? '?' : '&') + 'key=' + encodeURIComponent(ky) + '&view=summary')
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (d && d.error) { $('status').innerHTML = '<span class="err">Backend says: ' + esc(d.error) + ' (check the SECRET).</span>'; return; }
+        $('status').textContent = '✓ Loaded';
+        render(d);
+      })
+      .catch(function () { $('status').innerHTML = '<span class="err">Couldn’t reach the endpoint — confirm the /exec URL and that the deployment allows “Anyone”.</span>'; });
+  });
+  $('forget').addEventListener('click', function () {
+    try { localStorage.removeItem('ol-admin-ep'); localStorage.removeItem('ol-admin-key'); } catch (e) {}
+    $('ep').value = ''; $('ky').value = ''; $('out').innerHTML = ''; $('status').textContent = 'Settings cleared.';
+  });
+  if ($('ep').value && $('ky').value) $('load').click();
+})();
+</script>
+</body>
+</html>
