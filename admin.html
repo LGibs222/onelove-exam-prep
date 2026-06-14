@@ -73,6 +73,8 @@
 (function () {
   var $ = function (id) { return document.getElementById(id); };
   try { $('ep').value = localStorage.getItem('ol-admin-ep') || ''; $('ky').value = localStorage.getItem('ol-admin-key') || ''; } catch (e) {}
+  // allow a one-click link: admin.html#ep=<url>&key=<secret>
+  try { var hp = new URLSearchParams(location.hash.replace(/^#/, '')); if (hp.get('ep')) $('ep').value = hp.get('ep'); if (hp.get('key')) $('ky').value = hp.get('key'); if (location.hash) history.replaceState(null, '', location.pathname); } catch (e) {}
 
   var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
   var pctCell = function (v) { return v == null ? '<span class="dim">—</span>' : '<span class="num">' + esc(v) + '%</span>'; };
