@@ -66,6 +66,19 @@
     <p class="hint" style="margin-bottom:0">Setup: deploy <code>tracking-backend.gs</code> as a web app (Execute as Me · access Anyone), set its <code>SECRET</code>, then paste both here. Settings save in this browser only.</p>
   </div>
 
+  <div class="card" id="issuecard" style="display:none">
+    <h3 style="margin:0 0 4px;font-size:15px;font-weight:800">Issue an access code</h3>
+    <p class="hint" style="margin:0 0 12px">A request comes in → approve the person → generate their personal code and send it. Each code maps one real user to the tracking data.</p>
+    <div class="row" style="align-items:flex-end;gap:12px">
+      <div style="flex:2;min-width:150px"><label for="is-name">Name</label><input id="is-name" type="text" placeholder="Approved user's name" /></div>
+      <div style="flex:2;min-width:150px"><label for="is-email">Email (optional)</label><input id="is-email" type="email" placeholder="them@example.com" /></div>
+      <div style="flex:1;min-width:110px"><label for="is-app">App(s)</label><input id="is-app" type="text" value="all" placeholder="all or EAS,BCBA" /></div>
+      <button id="is-go">Generate code</button>
+    </div>
+    <p id="is-out" class="hint" style="margin-top:12px"></p>
+    <div id="codes"></div>
+  </div>
+
   <div id="out"></div>
 </div>
 
@@ -79,6 +92,27 @@
   var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
   var pctCell = function (v) { return v == null ? '<span class="dim">—</span>' : '<span class="num">' + esc(v) + '%</span>'; };
   var when = function (iso) { if (!iso) return '<span class="dim">—</span>'; var d = new Date(iso); return isNaN(d) ? esc(iso) : esc(d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })); };
+
+  // Apps Script isn't CORS-readable; load via JSONP (<script> tag).
+  function jsonp(url, t) {
+    return new Promise(function (res) {
+      var cb = '__a' + Math.random().toString(36).slice(2), s = document.createElement('script'), done = false;
+      var timer = setTimeout(function () { fin(null); }, t || 12000);
+      function clean() { try { delete window[cb]; } catch (e) {} if (s.parentNode) s.parentNode.removeChild(s); clearTimeout(timer); }
+      function fin(v) { if (done) return; done = true; clean(); res(v); }
+      window[cb] = function (d) { fin(d); }; s.onerror = function () { fin(null); };
+      s.src = url + (url.indexOf('?') < 0 ? '?' : '&') + 'callback=' + cb; document.head.appendChild(s);
+    });
+  }
+  var api = function (ep, params) { return jsonp(ep + (ep.indexOf('?') < 0 ? '?' : '&') + params); };
+
+  function renderCodes(codes) {
+    if (!codes || !codes.length) { document.getElementById('codes').innerHTML = '<p class="hint" style="margin-top:14px">No personal codes issued yet — generate one above.</p>'; return; }
+    var rows = codes.map(function (c) {
+      return '<tr><td><code>' + esc(c.code) + '</code></td><td><b>' + esc(c.name) + '</b></td><td class="dim">' + esc(c.email || '') + '</td><td>' + esc(c.apps) + '</td><td class="num">' + esc(c.uses) + '</td><td>' + when(c.lastUsed) + '</td><td>' + (c.active ? '<span class="pos">active</span>' : '<span class="neg">revoked</span>') + '</td></tr>';
+    }).join('');
+    document.getElementById('codes').innerHTML = '<div style="overflow-x:auto;margin-top:14px"><table><thead><tr><th>Code</th><th>Name</th><th>Email</th><th>Apps</th><th>Uses</th><th>Last used</th><th>Status</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+  }
 
   function render(data) {
     var appsHtml = Object.keys(data.apps || {}).sort().map(function (a) {
@@ -113,14 +147,29 @@
     if (!ep || !ky) { $('status').innerHTML = '<span class="err">Add both the endpoint and the key.</span>'; return; }
     try { localStorage.setItem('ol-admin-ep', ep); localStorage.setItem('ol-admin-key', ky); } catch (e) {}
     $('status').textContent = 'Loading…';
-    fetch(ep + (ep.indexOf('?') < 0 ? '?' : '&') + 'key=' + encodeURIComponent(ky) + '&view=summary')
-      .then(function (r) { return r.json(); })
-      .then(function (d) {
-        if (d && d.error) { $('status').innerHTML = '<span class="err">Backend says: ' + esc(d.error) + ' (check the SECRET).</span>'; return; }
-        $('status').textContent = '✓ Loaded';
-        render(d);
-      })
-      .catch(function () { $('status').innerHTML = '<span class="err">Couldn’t reach the endpoint — confirm the /exec URL and that the deployment allows “Anyone”.</span>'; });
+    api(ep, 'key=' + encodeURIComponent(ky) + '&view=summary').then(function (d) {
+      if (!d) { $('status').innerHTML = '<span class="err">Couldn’t reach the endpoint — confirm the /exec URL and that the deployment allows “Anyone”.</span>'; return; }
+      if (d.error) { $('status').innerHTML = '<span class="err">Backend says: ' + esc(d.error) + ' (check the SECRET).</span>'; return; }
+      $('status').textContent = '✓ Loaded';
+      document.getElementById('issuecard').style.display = 'block';
+      render(d);
+      api(ep, 'action=codes&key=' + encodeURIComponent(ky)).then(function (c) { renderCodes(c && c.codes || []); });
+    });
+  });
+
+  if ($('is-go')) $('is-go').addEventListener('click', function () {
+    var ep = $('ep').value.trim(), ky = $('ky').value.trim();
+    var nm = ($('is-name').value || '').trim(), em = ($('is-email').value || '').trim(), ap = ($('is-app').value || 'all').trim() || 'all';
+    if (!ep || !ky) { $('is-out').innerHTML = '<span class="err">Load the dashboard first.</span>'; return; }
+    if (!nm) { $('is-out').innerHTML = '<span class="err">Enter a name.</span>'; return; }
+    $('is-out').textContent = 'Generating…';
+    api(ep, 'action=issue&key=' + encodeURIComponent(ky) + '&name=' + encodeURIComponent(nm) + '&email=' + encodeURIComponent(em) + '&apps=' + encodeURIComponent(ap)).then(function (d) {
+      if (d && d.code) {
+        $('is-out').innerHTML = '✓ Code for <b>' + esc(nm) + '</b>: <code style="font-size:16px;padding:3px 8px">' + esc(d.code) + '</code> &nbsp; copy &amp; send it.';
+        $('is-name').value = ''; $('is-email').value = '';
+        api(ep, 'action=codes&key=' + encodeURIComponent(ky)).then(function (c) { renderCodes(c && c.codes || []); });
+      } else { $('is-out').innerHTML = '<span class="err">Couldn’t issue — ' + esc((d && d.error) || 'no response') + '.</span>'; }
+    });
   });
   $('forget').addEventListener('click', function () {
     try { localStorage.removeItem('ol-admin-ep'); localStorage.removeItem('ol-admin-key'); } catch (e) {}
